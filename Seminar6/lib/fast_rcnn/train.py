@@ -13,8 +13,6 @@ from utils.timer import Timer
 import numpy as np
 import os
 
-import solver
-
 class SolverWrapper(object):
     """A simple wrapper around Caffe's solver.
     This wrapper gives us control over he snapshotting process, which we
@@ -56,8 +54,9 @@ class SolverWrapper(object):
         model_paths = []
         while self.solver.iter < max_iters:
             timer.tic()
+            
             ################################################### YOUR CODE GOES HERE
-            # Make one SGD update
+            # Make one SGD update.
             
             timer.toc()
             if self.solver.iter % (10 * self.solver.display_freq) == 0:
