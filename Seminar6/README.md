@@ -11,7 +11,7 @@ While it sounds like an easy task, this surgery still requires good familiarity 
 
 We (the TAs) will try to simplify you life by doing significant codebase reduction and adapation and uploading the scaffolding onto the course page, but you are welcome to dive deep into the original implementation and conduct clean-up and transplantaion completely on your own.
 
-All your custom code should go into, well, `custom/` folder. There are two other files (`lib/utils/{train test}.py`) which should be modified. Implementation could differ for example you can create Solver class for storing Lasagne model, updates and functions for training. And use this class methods in train.py and test.py. Check [Lasagne recipes](https://github.com/Lasagne/Recipes) pretrained networks.
+All your custom code should go into, well, `custom/` folder. There are two other files (`lib/utils/{train test}.py`) which should be modified. We suggest you to create separate classes for the **model** (holding a Theano expression which can be later compiled into proper function) and for the **solver** (conducting actual SGD steps for the model parameters). Look at the [original code](https://github.com/rbgirshick/py-faster-rcnn) for reference. Check [Lasagne recipes](https://github.com/Lasagne/Recipes) for pretrained networks.
 
 The submission will be considered successful if:
   * The updated training and testing code runs with no errors (check `experiments/scripts/fast_rcnn.sh` script)
