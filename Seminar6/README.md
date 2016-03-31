@@ -22,3 +22,5 @@ There is Makefile for compiling cython code (which can be found in `lib/` folder
 The Rob's code makes use of a non-standard layer called **ROIPooling**. This trick gives a **very** nice speed-up but is absent from the Theano package. That's why we are not requiring you to incorporate it into your solutions. Feel free to go with a vanilla RCNN system (i.e. feed resized crops into the very beginning of your network).
 
 It goes without saying, that you can also go ahead and wrap the original CUDA kernel into a Theano Op or write your own CPU implementation from scratch. In that case, you can expect immense respect for your engineering skills as well as generous bonus points.
+
+**UPDATE:** I did an attempt to port ROIPooling to Theano myself: https://github.com/ddtm/theano-roi-pooling. This was a quite painful experience, I must say. Feel free to use it and please report bugs. There is only a GPU-version for now but you can take it as a reference and port the CPU functions in the same fashion (and create a pull request, obviously).
