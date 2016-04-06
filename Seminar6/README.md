@@ -3,7 +3,7 @@ Seminar 6: Hacking R-CNN
 
 **WARNING: This seminar was not thoroughly tested so expect weird bugs. Please report if you found one!**
 
-In this assignment, you will hack the existing code for object detection (https://github.com/rbgirshick/py-faster-rcnn) in order to make it usable with **Theano**-based models.
+In this assignment, you will hack the existing code for object detection (https://github.com/rbgirshick/py-faster-rcnn) in order to make it usable with **Theano**-based models. Check original repository for instructions on data preparations.
 
 Originally, Rob Girshick uses [Caffe](http://caffe.berkeleyvision.org/) as a backend for deep learning. This is not very good for us as Caffe is substantially different from Theano, and one cannot simply replace one framework with the other. Luckily, the training and the testing procedures are built on top of the [Python interface](http://caffe.berkeleyvision.org/tutorial/interfaces.html) (instead of the Caffe's native CLI+protobufs combo) which makes it possible to locate and exterminate Caffe-contaminated parts and fill the gaps with appropriate wrappers around Theano machinery.
 
