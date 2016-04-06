@@ -1,11 +1,10 @@
 #!/bin/bash
 # Usage:
-# ./experiments/scripts/fast_rcnn.sh GPU NET DATASET [options args to {train,test}_net.py]
+# ./experiments/scripts/fast_rcnn.sh DATASET [options args to {train,test}_net.py]
 # DATASET is either pascal_voc or coco.
 #
 # Example:
-# ./experiments/scripts/fast_rcnn.sh 0 VGG_CNN_M_1024 pascal_voc \
-#   --set EXP_DIR foobar RNG_SEED 42 TRAIN.SCALES "[400, 500, 600, 700]"
+# ./experiments/scripts/fast_rcnn.sh pascal_voc
 
 set -x
 set -e
