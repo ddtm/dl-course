@@ -1,0 +1,8 @@
+EXP_DIR: rcnn
+TRAIN:
+  PROPOSAL_METHOD: 'selective_search' # or 'rpn'
+  SNAPSHOT_ITERS: 5000
+  BBOX_REG: False
+TEST:
+  PROPOSAL_METHOD: 'selective_search' # or 'rpn'
+  BBOX_REG: False

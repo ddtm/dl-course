@@ -100,17 +100,16 @@ def _get_blobs(im, rois):
     """Convert an image and RoIs within that image into network inputs."""
     blobs = {'data' : None, 'rois' : None}
     blobs['data'], im_scale_factors = _get_image_blob(im)
-    if not cfg.TEST.HAS_RPN:
-        blobs['rois'] = _get_rois_blob(rois, im_scale_factors)
+    blobs['rois'] = _get_rois_blob(rois, im_scale_factors)
     return blobs, im_scale_factors
 
-def im_detect(net, im, boxes=None):
+def im_detect(net, im, boxes):
     """Detect object classes in an image given object proposals.
 
     Arguments:
         net (caffe.Net): Fast R-CNN network to use
         im (ndarray): color image to test (in BGR order)
-        boxes (ndarray): R x 4 array of object proposals or None (for RPN)
+        boxes (ndarray): R x 4 array of object proposals
 
     Returns:
         scores (ndarray): R x K array of object class scores (K includes
@@ -123,7 +122,7 @@ def im_detect(net, im, boxes=None):
     # (some distinct image ROIs get mapped to the same feature ROI).
     # Here, we identify duplicate feature ROIs, so we only compute features
     # on the unique subset.
-    if cfg.DEDUP_BOXES > 0 and not cfg.TEST.HAS_RPN:
+    if cfg.DEDUP_BOXES > 0:
         v = np.array([1, 1e3, 1e6, 1e9, 1e12])
         hashes = np.round(blobs['rois'] * cfg.DEDUP_BOXES).dot(v)
         _, index, inv_index = np.unique(hashes, return_index=True,
@@ -131,17 +130,14 @@ def im_detect(net, im, boxes=None):
         blobs['rois'] = blobs['rois'][index, :]
         boxes = boxes[index, :]
 
-    # now in blobs['data'] there are images
-    # and in blobs['rois'] proposals
-    ################################################### YOUR CODE GOES HERE
-    # reshape network inputs to match blobs['data'].shape and blobs['rois'].shape
-    #
+    # do forward
+    forward_kwargs = {'data': blobs['data'].astype(np.float32, copy=False)}
+    forward_kwargs['rois'] = blobs['rois'].astype(np.float32, copy=False)
+    blobs_out = net.forward(**forward_kwargs)
 
-    # do forward with blobs['data'] and blobs['rois']
-    #
-
-    # use softmax estimated probabilities (net output)
-    # scores = ...
+    # use softmax estimated probabilities
+    scores = blobs_out['cls_prob']
+    print scores
 
     if cfg.TEST.BBOX_REG:
         # Apply bounding-box regression deltas
@@ -152,7 +148,7 @@ def im_detect(net, im, boxes=None):
         # Simply repeat the boxes, once for each class
         pred_boxes = np.tile(boxes, (1, scores.shape[1]))
 
-    if cfg.DEDUP_BOXES > 0 and not cfg.TEST.HAS_RPN:
+    if cfg.DEDUP_BOXES > 0:
         # Map scores and predictions back to the original set of boxes
         scores = scores[inv_index, :]
         pred_boxes = pred_boxes[inv_index, :]
@@ -214,8 +210,7 @@ def test_net(net, imdb, max_per_image=100, thresh=0.05, vis=False):
     # timers
     _t = {'im_detect' : Timer(), 'misc' : Timer()}
 
-    if not cfg.TEST.HAS_RPN:
-        roidb = imdb.roidb
+    roidb = imdb.roidb
 
     for i in xrange(num_images):
         # filter out any ground truth boxes

@@ -13,6 +13,8 @@ from utils.timer import Timer
 import numpy as np
 import os
 
+from custom.solver import Solver
+
 class SolverWrapper(object):
     """A simple wrapper around Caffe's solver.
     This wrapper gives us control over he snapshotting process, which we
@@ -29,9 +31,10 @@ class SolverWrapper(object):
                     rdl_roidb.add_bbox_regression_targets(roidb)
             print 'done'
 
-        ################################################### YOUR CODE GOES HERE
-        # Create an instance of the Solver class.
-        # self.solver = ...
+        ################ You MIGHT want to instantiate your custom solver here.
+        # Don't forget to supply roidb to the ROIPoolingLayer!
+        # You should have the following line:
+        # self.solver = Solver()
 
     def snapshot(self):
         """Saves the state the solver state."""
@@ -39,12 +42,12 @@ class SolverWrapper(object):
         infix = ('_' + cfg.TRAIN.SNAPSHOT_INFIX
                  if cfg.TRAIN.SNAPSHOT_INFIX != '' else '')
         filename = (self.solver.snapshot_prefix + infix +
-                    '_iter_{:d}'.format(self.solver.iter) + '.caffemodel')
+                    '_iter_{:d}'.format(self.solver.iter) + '.pkl')
         filename = os.path.join(self.output_dir, filename)
 
-        solver.save(str(filename))
+        self.solver.save(str(filename))
         print 'Wrote snapshot to: {:s}'.format(filename)
-        
+
         return filename
 
     def train_model(self, max_iters):
@@ -53,10 +56,10 @@ class SolverWrapper(object):
         timer = Timer()
         model_paths = []
         while self.solver.iter < max_iters:
+            # Make one SGD update
             timer.tic()
-            
-            ############################################### YOUR CODE GOES HERE
-            # Make one SGD update.
+
+            self.solver.step()
             
             timer.toc()
             if self.solver.iter % (10 * self.solver.display_freq) == 0:

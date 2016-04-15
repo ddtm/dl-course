@@ -17,11 +17,16 @@ import argparse
 import pprint
 import time, os, sys
 
+from custom.tester import Tester
+
 def parse_args():
     """
     Parse input arguments
     """
     parser = argparse.ArgumentParser(description='Test a Fast R-CNN network')
+    parser.add_argument('--snapshot', dest='snapshot',
+                        help='model to test',
+                        default=None, type=str)
     parser.add_argument('--cfg', dest='cfg_file',
                         help='optional config file', default=None, type=str)
     parser.add_argument('--wait', dest='wait',
@@ -59,21 +64,14 @@ if __name__ == '__main__':
     if args.set_cfgs is not None:
         cfg_from_list(args.set_cfgs)
 
-    cfg.GPU_ID = args.gpu_id
-
     print('Using config:')
     pprint.pprint(cfg)
 
-    while not os.path.exists(args.caffemodel) and args.wait:
-        print('Waiting for {} to exist...'.format(args.caffemodel))
-        time.sleep(10)
-
-    net = caffe.Net(args.prototxt, args.caffemodel, caffe.TEST)
-    net.name = os.path.splitext(os.path.basename(args.caffemodel))[0]
+    tester = Tester(args.snapshot)
+    tester.name = os.path.splitext(os.path.basename(args.snapshot))[0]
 
     imdb = get_imdb(args.imdb_name)
     imdb.competition_mode(args.comp_mode)
-    if not cfg.TEST.HAS_RPN:
-        imdb.set_proposal_method(cfg.TEST.PROPOSAL_METHOD)
+    imdb.set_proposal_method(cfg.TEST.PROPOSAL_METHOD)
 
-    test_net(net, imdb, max_per_image=args.max_per_image, vis=args.vis)
+    test_net(tester, imdb, max_per_image=args.max_per_image, vis=args.vis)

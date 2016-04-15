@@ -20,6 +20,6 @@ this_dir = osp.dirname(__file__)
 lib_path = osp.join(this_dir, '..', 'lib')
 add_path(lib_path)
 
-# Add custom modules to PYTHONPATH
-custom_path = osp.join(this_dir, '..', 'custom')
-add_path(custom_path)
+# Add root dir to PYTHONPATH
+lib_path = osp.join(this_dir, '..')
+add_path(lib_path)

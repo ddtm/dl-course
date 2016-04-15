@@ -140,22 +140,46 @@ class pascal_voc(imdb):
         return roidb
 
     def rpn_roidb(self):
+        cache_file = os.path.join(self.cache_path,
+                                  self.name + '_rpn_roidb.pkl')
+
+        if os.path.exists(cache_file):
+            with open(cache_file, 'rb') as fid:
+                roidb = cPickle.load(fid)
+            print '{} rpn roidb loaded from {}'.format(self.name, cache_file)
+            return roidb
+
         if int(self._year) == 2007 or self._image_set != 'test':
             gt_roidb = self.gt_roidb()
             rpn_roidb = self._load_rpn_roidb(gt_roidb)
             roidb = imdb.merge_roidbs(gt_roidb, rpn_roidb)
         else:
             roidb = self._load_rpn_roidb(None)
+        with open(cache_file, 'wb') as fid:
+            cPickle.dump(roidb, fid, cPickle.HIGHEST_PROTOCOL)
+        print 'wrote rpn roidb to {}'.format(cache_file)
 
         return roidb
 
     def _load_rpn_roidb(self, gt_roidb):
-        filename = self.config['rpn_file']
-        print 'loading {}'.format(filename)
+        filename = os.path.abspath(os.path.join(cfg.DATA_DIR,
+                                                'rpn_data',
+                                                self.name + '.mat'))
         assert os.path.exists(filename), \
-               'rpn data not found at: {}'.format(filename)
-        with open(filename, 'rb') as f:
-            box_list = cPickle.load(f)
+               'RPN data not found at: {}'.format(filename)
+        rpn_data = sio.loadmat(filename)['aboxes']
+
+        box_list = []
+        if rpn_data.shape[0] > self.num_images:
+            step = 2
+        else:
+            step = 1
+        for i in xrange(0, rpn_data.shape[0], step):
+            boxes = rpn_data[i][0][:, : 4] - 1
+            keep = ds_utils.filter_small_boxes(boxes, self.config['min_size'])
+            boxes = boxes[keep, :]
+            box_list.append(boxes)
+
         return self.create_roidb_from_box_list(box_list, gt_roidb)
 
     def _load_selective_search_roidb(self, gt_roidb):

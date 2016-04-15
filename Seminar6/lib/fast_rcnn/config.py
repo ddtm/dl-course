@@ -74,10 +74,6 @@ __C.TRAIN.SNAPSHOT_ITERS = 10000
 # infix to yield the path: <prefix>[_<infix>]_iters_XYZ.caffemodel
 __C.TRAIN.SNAPSHOT_INFIX = ''
 
-# Use a prefetch thread in roi_data_layer.layer
-# So far I haven't found this useful; likely more engineering work is required
-__C.TRAIN.USE_PREFETCH = False
-
 # Normalize the targets (subtract empirical mean, divide by empirical stddev)
 __C.TRAIN.BBOX_NORMALIZE_TARGETS = True
 # Deprecated (inside weights)
@@ -95,34 +91,6 @@ __C.TRAIN.PROPOSAL_METHOD = 'selective_search'
 # tall and thin or both short and wide) in order to avoid wasting computation
 # on zero-padding.
 __C.TRAIN.ASPECT_GROUPING = True
-
-# Use RPN to detect objects
-__C.TRAIN.HAS_RPN = False
-# IOU >= thresh: positive example
-__C.TRAIN.RPN_POSITIVE_OVERLAP = 0.7
-# IOU < thresh: negative example
-__C.TRAIN.RPN_NEGATIVE_OVERLAP = 0.3
-# If an anchor statisfied by positive and negative conditions set to negative
-__C.TRAIN.RPN_CLOBBER_POSITIVES = False
-# Max number of foreground examples
-__C.TRAIN.RPN_FG_FRACTION = 0.5
-# Total number of examples
-__C.TRAIN.RPN_BATCHSIZE = 256
-# NMS threshold used on RPN proposals
-__C.TRAIN.RPN_NMS_THRESH = 0.7
-# Number of top scoring boxes to keep before apply NMS to RPN proposals
-__C.TRAIN.RPN_PRE_NMS_TOP_N = 12000
-# Number of top scoring boxes to keep after applying NMS to RPN proposals
-__C.TRAIN.RPN_POST_NMS_TOP_N = 2000
-# Proposal height and width both need to be greater than RPN_MIN_SIZE (at orig image scale)
-__C.TRAIN.RPN_MIN_SIZE = 16
-# Deprecated (outside weights)
-__C.TRAIN.RPN_BBOX_INSIDE_WEIGHTS = (1.0, 1.0, 1.0, 1.0)
-# Give the positive RPN examples weight of p * 1 / {num positives}
-# and give negatives a weight of (1 - p)
-# Set to -1.0 to use uniform example weighting
-__C.TRAIN.RPN_POSITIVE_WEIGHT = -1.0
-
 
 #
 # Testing options
@@ -148,25 +116,16 @@ __C.TEST.SVM = False
 # Test using bounding-box regressors
 __C.TEST.BBOX_REG = True
 
-# Propose boxes
-__C.TEST.HAS_RPN = False
-
 # Test using these proposals
 __C.TEST.PROPOSAL_METHOD = 'selective_search'
-
-## NMS threshold used on RPN proposals
-__C.TEST.RPN_NMS_THRESH = 0.7
-## Number of top scoring boxes to keep before apply NMS to RPN proposals
-__C.TEST.RPN_PRE_NMS_TOP_N = 6000
-## Number of top scoring boxes to keep after applying NMS to RPN proposals
-__C.TEST.RPN_POST_NMS_TOP_N = 300
-# Proposal height and width both need to be greater than RPN_MIN_SIZE (at orig image scale)
-__C.TEST.RPN_MIN_SIZE = 16
-
 
 #
 # MISC
 #
+
+# Number of classes in the dataset.
+# For Pascal VOC 2007 it is 20 + 1 (background class).
+__C.NUM_CLASSES = 21
 
 # The mapping from image coordinates to feature map coordinates might cause
 # some boxes that are distinct in image space to become identical in feature
@@ -195,14 +154,11 @@ __C.DATA_DIR = osp.abspath(osp.join(__C.ROOT_DIR, 'data'))
 # Model directory
 __C.MODELS_DIR = osp.abspath(osp.join(__C.ROOT_DIR, 'models', 'pascal_voc'))
 
-# Name (or path to) the matlab executable
-__C.MATLAB = 'matlab'
-
 # Place outputs under an experiments directory
 __C.EXP_DIR = 'default'
 
 # Use GPU implementation of non-maximum suppression
-__C.USE_GPU_NMS = True
+__C.USE_GPU_NMS = False
 
 # Default GPU device id
 __C.GPU_ID = 0
