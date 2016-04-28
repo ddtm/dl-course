@@ -4,7 +4,7 @@
 from operator import add
 import re
 import numpy as np
-def get_metrics(gen_sequences):    
+def get_metrics(gen_sequences,alphabet):    
     strings = map(lambda v:reduce(add,v), map(alphabet.__getitem__,gen_sequences))
     
     #at least one complete string
